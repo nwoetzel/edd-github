@@ -291,8 +291,12 @@ class EDD_Github {
 
     public function fileTableRow($post_id, $key, $args) {
         $cell  = '<td>';
-        $cell .= '<input type="hidden" name="edd_download_files['.absint( $key ).'][github]" class="edd_repeatable_github_field" value="'.($args['github'] ? 'true' : 'false').'"/>';
-        $cell .= '<span class="dashicons dashicons-'.($args['github'] ? 'yes' : 'no').'"></span>';
+        $cell .= '<input type="hidden" name="edd_download_files['.absint( $key ).'][github]" value="'.($args['github'] ? 'true' : '').'"/>';
+        if ($args['github']) {
+            $cell .= '<div class="chosen-container">';
+            $cell .= '<span class="dashicons dashicons-yes"></span>';
+            $cell .= '</div>';
+        }
         $cell .= '</td>';
 
         echo $cell;
