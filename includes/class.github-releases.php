@@ -40,7 +40,7 @@ class EDD_Github_Releases {
             $url .= '/latest';
         } else {
             // https://developer.github.com/v3/repos/releases/#get-a-release-by-tag-name
-            $url .= '/tags/{$tag}';
+            $url .= '/tags/'.$tag;
         }
         $url = $this->addAccessToken($url);
 
