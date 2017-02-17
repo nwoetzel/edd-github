@@ -116,6 +116,8 @@ class EDD_Github {
 //        }
     }
 
+    CONST GITHUB_META_KEY = '_edd_github';
+
     /**
      * register post meta for github setup
      *
@@ -124,49 +126,12 @@ class EDD_Github {
      * @return      void
      */
     private function registerPostMeta() {
-//        register_meta(
-//            'post',
-//            '_edd_github',
-//            array(
-//                'type'              => 'array',
-//                'description'       => 'github repo information',
-//                'show_in_rest'      => true,
-//            )
-//        );
-
         register_meta(
             'post',
-            '_edd_github_user',
+            self::GITHUB_META_KEY,
             array(
-                'type'              => 'string',
-                'description'       => 'github username',
-                'show_in_rest'      => true,
-            )
-        );
-        register_meta(
-            'post',
-            '_edd_github_repo',
-            array(
-                'type'              => 'string',
-                'description'       => 'github repository name',
-                'show_in_rest'      => true,
-            )
-        );
-        register_meta(
-            'post',
-            '_edd_github_token',
-            array(
-                'type'              => 'string',
-                'description'       => 'github access token for api use (e.g. with private repositories)',
-                'show_in_rest'      => true,
-            )
-        );
-        register_meta(
-            'post',
-            '_edd_github_tag',
-            array(
-                'type'              => 'string',
-                'description'       => 'github release tag',
+                'type'              => 'array',
+                'description'       => 'github repo information',
                 'show_in_rest'      => true,
             )
         );
@@ -181,19 +146,20 @@ class EDD_Github {
      * @return      void
      */
     public function add_github_metabox( $post_id = 0 ) {
-        $github_user = get_post_meta( $post_id, '_edd_github_user', true );
-        $github_repo = get_post_meta( $post_id, '_edd_github_repo', true );
-        $github_token = get_post_meta( $post_id, '_edd_github_token', true );
-        $github_tag = get_post_meta( $post_id, '_edd_github_tag', true );
+        $github_info = get_post_meta( $post_id, self::GITHUB_META_KEY, true );
+        $github_user = $github_info['user'];
+        $github_repo = $github_info['repo'];
+        $github_token = $github_info['token'];
+        $github_tag = $github_info['tag'];
 
         // heading
         $metabox  = '<strong>Github repo</strong>';
 
         // username
         $metabox .= '<p>';
-        $metabox .= '<label for="_edd_github_user">Username</label>';
+        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[user]">Username</label>';
         $metabox .= EDD()->html->text( array(
-            'name' => '_edd_github_user',
+            'name' => self::GITHUB_META_KEY.'[user]',
             'value' => $github_user,
             'class' => 'large-text',
         ) );
@@ -201,9 +167,9 @@ class EDD_Github {
 
         // repo name
         $metabox .= '<p>';
-        $metabox .= '<label for="_edd_github_repo">Repository</label>';
+        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[repo]">Repository</label>';
         $metabox .= EDD()->html->text( array(
-            'name' => '_edd_github_repo',
+            'name' => self::GITHUB_META_KEY.'[repo]',
             'value' => $github_repo,
             'class' => 'large-text',
         ) );
@@ -211,9 +177,9 @@ class EDD_Github {
 
         // release tag
         $metabox .= '<p>';
-        $metabox .= '<label for="_edd_github_tag">Tag (default latest release)</label>';
+        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[tag]">Tag (default latest release)</label>';
         $metabox .= EDD()->html->text( array(
-            'name' => '_edd_github_tag',
+            'name' => self::GITHUB_META_KEY.'[tag]',
             'value' => $github_tag,
             'class' => 'large-text',
         ) );
@@ -221,9 +187,9 @@ class EDD_Github {
 
         // accesstoken as required for private repos
         $metabox .= '<p>';
-        $metabox .= '<label for="_edd_github_repo">Access token</label>';
+        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[token]">Access token</label>';
         $metabox .= EDD()->html->text( array(
-            'name' => '_edd_github_token',
+            'name' => self::GITHUB_META_KEY.'[token]',
             'value' => $github_token,
             'class' => 'large-text',
         ) );
@@ -251,25 +217,23 @@ class EDD_Github {
      * @return      string[] extended $fields by the additional fields that need to be saved
      */
     public function save_github_metabox( $fields ) {
-        $fields[] = '_edd_github_user';
-        $fields[] = '_edd_github_repo';
-        $fields[] = '_edd_github_token';
-        $fields[] = '_edd_github_tag';
+        $fields[] = self::GITHUB_META_KEY;
 
         return $fields;
     }
 
     public function add_github_files( $files, $post_id, $variable_price_id) {
-        $github_user = get_post_meta( $post_id, '_edd_github_user', true );
-        $github_repo = get_post_meta( $post_id, '_edd_github_repo', true );
+        $github_info = get_post_meta( $post_id, self::GITHUB_META_KEY, true );
+        $github_user = $github_info['user'];
+        $github_repo = $github_info['repo'];
 
         // is there any github setting
         if (empty($github_user) || empty($github_repo)) {
             return $files;
         }
 
-        $github_token = get_post_meta( $post_id, '_edd_github_token', true );
-        $github_tag = get_post_meta( $post_id, '_edd_github_tag', true );
+        $github_token = $github_info['token'];
+        $github_tag = $github_info['tag'];
 
         $github_releases = new EDD_Github_Releases($github_user, $github_repo, $github_token);
         $release = $github_releases->releases($github_tag);
@@ -366,7 +330,7 @@ class EDD_Github {
         edd_record_download_in_log( $download_id, $file_key, $user_info, edd_get_ip(), $payment, $args['price_id'] );
 
         // deliver the content of the file
-        $github_token = get_post_meta( $download_id, '_edd_github_token', true );
+        $github_token = get_post_meta( $download_id, self::GITHUB_META_KEY, true )['token'];
 
         if (!empty($github_token)) {
             $requested_file_url =  add_query_arg( array( "access_token" => $github_token ), $requested_file_url ); 
