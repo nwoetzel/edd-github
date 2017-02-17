@@ -107,13 +107,33 @@ class EDD_Github {
         add_action('edd_download_file_table_row',array($this,'fileTableRow'),10,3);
         add_filter('edd_file_row_args',array($this,'fileRowArgs'), 10, 2);
 
+        // handle download
+        add_action('edd_process_verified_download', array( $this, 'process_download' ), 10, 4 );
+
         // Handle licensing
 //        if( class_exists( 'EDD_License' ) ) {
 //            $license = new EDD_License( __FILE__, 'VC Integration', EDD_VC_INTEGRATION_VER, 'Nils Woetzel' );
 //        }
     }
 
+    /**
+     * register post meta for github setup
+     *
+     * @access      private
+     * @since       1.0.0
+     * @return      void
+     */
     private function registerPostMeta() {
+//        register_meta(
+//            'post',
+//            '_edd_github',
+//            array(
+//                'type'              => 'array',
+//                'description'       => 'github repo information',
+//                'show_in_rest'      => true,
+//            )
+//        );
+
         register_meta(
             'post',
             '_edd_github_user',
@@ -265,9 +285,10 @@ class EDD_Github {
             $file_info['index'] = '';
             $file_info['attachment_id'] = 0;
             $file_info['name'] = $asset->name;
-            $file_info['file'] = $asset->url;
+            $file_info['file'] = $asset->browser_download_url;
             $file_info['condition'] = 'all';
             $file_info['github'] = 1;
+            $file_info['github_asset'] = $asset;
 
             $files[] = $file_info;
         }
@@ -312,6 +333,90 @@ class EDD_Github {
         }
 
         return $sanitized_files;
+    }
+
+    public function process_download($download_id, $email, $payment, $args) {
+        $download_files = edd_get_download_files( $download_id );
+        $file_key = $args['file_key'];
+        $file_info = $download_files[ $file_key ];
+
+        // is this a github download?
+        if (!$file_info['github']) {
+            return;
+        }
+
+        $asset = $file_info['github_asset'];
+        $requested_file_url = $asset->url;
+        $requested_filename = $asset->name;
+        $ctype = $asset->content_type; 
+        $size = $asset->size;
+
+        $method = 'github';
+
+        do_action( 'edd_process_download_pre_record_log', $requested_file, $args, $method );
+
+        // Record this file download in the log
+	$user_info = array();
+	$user_info['email'] = $email;
+        if ( is_user_logged_in() ) {
+            $user_data         = get_userdata( get_current_user_id() );
+            $user_info['id']   = get_current_user_id();
+            $user_info['name'] = $user_data->display_name;
+        }
+        edd_record_download_in_log( $download_id, $file_key, $user_info, edd_get_ip(), $payment, $args['price_id'] );
+
+        // deliver the content of the file
+        $github_token = get_post_meta( $download_id, '_edd_github_token', true );
+
+        if (!empty($github_token)) {
+            $requested_file_url =  add_query_arg( array( "access_token" => $github_token ), $requested_file_url ); 
+        }
+
+        nocache_headers();
+        header("Robots: none");
+        header("Content-Type: " . $ctype . "");
+        header("Content-Description: File Transfer");
+        header("Content-Disposition: attachment; filename=\"" . apply_filters( 'edd_requested_file_name', $requested_filename ) . "\"");
+        header("Content-Transfer-Encoding: binary");
+        header("Content-Length: " . $size );
+        if( self::read_file( $requested_file_url ) ) {
+            // successfully served file
+            exit();
+        }
+
+        // read file was not successful
+        edd_die();
+    }
+
+    /**
+     * Reads file in chunks so big downloads are possible without changing PHP.INI
+     * See http://codeigniter.com/wiki/Download_helper_for_large_files/
+     *
+     * @access   protected
+     * @param    string  $file      The file url
+     * @return   bool               status after closing file handle
+     */
+    static protected function read_file( $file ) {
+        $opts = array(
+            'http'=>array(
+                'method'=>'GET',
+                'header'=>'User-Agent: wordpress'."\r\n".
+                          'Content-type: application/x-www-form-urlencoded'."\r\n".
+                          'Accept: application/octet-stream'."\r\n",
+            ),
+        );
+        $context = stream_context_create($opts);
+        $handle    = fopen( $file, 'rb', false, $context );
+
+        // file opened successfully?
+        if ( false === $handle ) {
+            return false;
+        }
+
+        // write all data to the output buffer
+        fpassthru( $handle );
+
+        return @fclose( $handle );
     }
 
 }
