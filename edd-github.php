@@ -116,6 +116,11 @@ class EDD_Github {
 //        }
     }
 
+    /**
+     * define the meta key for github release information
+     * @since 1.0.0
+     * @var string
+     */
     CONST GITHUB_META_KEY = '_edd_github';
 
     /**
@@ -142,7 +147,7 @@ class EDD_Github {
      *
      * @access      private
      * @since       1.0.0
-     * @param       int post_id
+     * @param       int $post_id
      * @return      void
      */
     public function add_github_metabox( $post_id = 0 ) {
@@ -222,6 +227,19 @@ class EDD_Github {
         return $fields;
     }
 
+    /**
+     * Add files from a github release to the edd_download_files array.
+     * github files have additional keys:
+     * 'github' - indicates if the file is a github file
+     * 'github_asset' - the asset object derived from the json response
+     *
+     * @access      public
+     * @since       1.0.0
+     * @param       array $files all current files
+     * @param       int $post_id the id of the download post
+     * @param       int $variable_price_id
+     * @return      array $files array extended by the assets of the github release
+     */
     public function add_github_files( $files, $post_id, $variable_price_id) {
         $github_info = get_post_meta( $post_id, self::GITHUB_META_KEY, true );
         $github_user = $github_info['user'];
@@ -260,10 +278,26 @@ class EDD_Github {
         return $files;
     }
 
+    /**
+     * Adds the header to the download files table in the post edit view.
+     *
+     * @access      public
+     * @since       1.0.0
+     * @param       int $post_id the download id of the post.
+     * @return      void
+     */
     public function fileTableColumnHead( $post_id ) {
         echo '<th style="width: 15px">Github</th>'; 
     }
 
+    /**
+     * Adds the github arg for rendering the additional github column.
+     *
+     * @access      public
+     * @since       1.0.0
+     * @param       int $post_id the download id of the post.
+     * @return      array $args extended by github key 
+     */
     public function fileRowArgs( $args, $value ) {
        if ( array_key_exists('github',$value) ) {
            $args['github'] = $value['github'];
@@ -274,6 +308,16 @@ class EDD_Github {
        return $args;
     }
 
+    /**
+     * Renders the cell for the file row with github information.
+     *
+     * @access      public
+     * @since       1.0.0
+     * @param       int $post_id the download id of the post.
+     * @param       int $file_key the current file key, i.e. index in edd_download_files array
+     * @param       array $args the args for the current file
+     * @return      void 
+     */
     public function fileTableRow($post_id, $key, $args) {
         $cell  = '<td>';
         $cell .= '<input type="hidden" name="edd_download_files['.absint( $key ).'][github]" value="'.($args['github'] ? 'true' : '').'"/>';
@@ -287,6 +331,14 @@ class EDD_Github {
         echo $cell;
     }
 
+    /**
+     * Removes all github files before saving a donwload post, since they were just added for information.
+     *
+     * @access      public
+     * @since       1.0.0
+     * @param       array $files the POST content for all files
+     * @return      array $files wihout files that had the key 'github'.
+     */
     public function remove_github_files( $files ) {
         $sanitized_files = array();
         foreach($files as $key => $file_info) {
@@ -299,6 +351,17 @@ class EDD_Github {
         return $sanitized_files;
     }
 
+    /**
+     * Serves a github file, if the given files is linked to a github asset.
+     *
+     * @access      public
+     * @since       1.0.0
+     * @param       int $download_id the download post id
+     * @param       string $email the customer email
+     * @param       int $payment the payment
+     * @param       array $args all args for the download link
+     * @return      void either returns if the file is not a github asset, or serve the file content and exit
+     */
     public function process_download($download_id, $email, $payment, $args) {
         $download_files = edd_get_download_files( $download_id );
         $file_key = $args['file_key'];
