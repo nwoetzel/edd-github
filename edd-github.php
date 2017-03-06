@@ -31,6 +31,12 @@ class EDD_Github {
     private static $instance;
 
     /**
+     * @since       1.2.0
+     * @var         EDD_Github_Shortcodes
+     */
+    public $shortcodes;
+
+    /**
      * Get active instance
      *
      * @access      public
@@ -42,6 +48,7 @@ class EDD_Github {
             self::$instance = new EDD_Github();
             self::$instance->setup_constants();
             self::$instance->includes();
+            self::$instance->shortcodes = new EDD_Github_Shortcodes();
             self::$instance->load_textdomain();
             self::$instance->registerPostMeta();
             self::$instance->hooks();
@@ -82,7 +89,7 @@ class EDD_Github {
          *              path standardization in EDD extensions. Uncomment any that are
          *              relevant to your extension, and remove the rest.
          */
-//        require_once EDD_GITHUB_DIR . 'includes/shortcodes.php';
+        require_once EDD_GITHUB_DIR . 'includes/shortcodes.php';
 //        require_once EDD_GITHUB_DIR . 'includes/widgets.php';
 
         require_once EDD_GITHUB_DIR . 'includes/class.github-releases.php';
