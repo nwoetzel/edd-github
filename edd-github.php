@@ -203,7 +203,7 @@ class EDD_Github {
 
         // username
         $metabox .= '<p>';
-        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[user]">Username</label>';
+        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[user]">'.__('Username', self::TEXT_DOMAIN).'</label>';
         $metabox .= EDD()->html->text( array(
             'name' => self::GITHUB_META_KEY.'[user]',
             'value' => $github_user,
@@ -213,7 +213,7 @@ class EDD_Github {
 
         // repo name
         $metabox .= '<p>';
-        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[repo]">Repository</label>';
+        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[repo]">'.__('Repository', self::TEXT_DOMAIN).'</label>';
         $metabox .= EDD()->html->text( array(
             'name' => self::GITHUB_META_KEY.'[repo]',
             'value' => $github_repo,
@@ -223,7 +223,7 @@ class EDD_Github {
 
         // release tag
         $metabox .= '<p>';
-        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[tag]">Tag (default latest release)</label>';
+        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[tag]">'.__('Tag (default latest release)', self::TEXT_DOMAIN).'</label>';
         $metabox .= EDD()->html->text( array(
             'name' => self::GITHUB_META_KEY.'[tag]',
             'value' => $github_tag,
@@ -234,7 +234,7 @@ class EDD_Github {
 
         // accesstoken as required for private repos
         $metabox .= '<p>';
-        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[token]">Access token</label>';
+        $metabox .= '<label for="'.self::GITHUB_META_KEY.'[token]">'.__('Access token', self::TEXT_DOMAIN).'</label>';
         $metabox .= EDD()->html->text( array(
             'name' => self::GITHUB_META_KEY.'[token]',
             'value' => $github_token,
@@ -243,12 +243,12 @@ class EDD_Github {
         $metabox .= '</p>';
 
         if( !empty($release) ) {
-            $version = empty($github_tag) ? ($release->tag_name.' (latest)') : $github_tag;
-            $metabox .= '<p>Version: '.$version.'</p>';
-            $metabox .= '<p>Published at: '.$release->published_at.'</p>';
-            $metabox .= '<p>Number assets found: '.count($release->assets).'</p>';
+            $version = empty($github_tag) ? ($release->tag_name.__(' (latest)', self::TEXT_DOMAIN)) : $github_tag;
+            $metabox .= '<p>'.__('Version', self::TEXT_DOMAIN).': '.$version.'</p>';
+            $metabox .= '<p>'.__('Published at', self::TEXT_DOMAIN).': '.$release->published_at.'</p>';
+            $metabox .= '<p>'.__('Number assets found', self::TEXT_DOMAIN).': '.count($release->assets).'</p>';
         } else {
-            $metabox .= '<p>No release found!</p>';
+            $metabox .= '<p>'.__('No release found!', self::TEXT_DOMAIN).'</p>';
         }
 
         echo $metabox;
