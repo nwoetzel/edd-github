@@ -3,7 +3,7 @@ Contributors: nwoetzel
 Tags: edd, easy digital downloads, github
 Requires at least: 4.6
 Tested up to: 4.7.2
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,10 @@ wp-cli.phar plugin install https://github.com/nwoetzel/edd-github/archive/1.0.1.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.1.0 =
+* added load_textdomain
+* added translation for de_DE
 
 = 1.0.1 =
 * cache github release api queries in transient

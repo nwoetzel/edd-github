@@ -4,7 +4,7 @@
  * Plugin Name: Easy Digital Downloads Github
  * Plugin URI:  https://github.com/nwoetzel/edd-github
  * Description: This plugin extends easy-digital-downloads adding downloads from github repositories.
- * Version:     1.0.1
+ * Version:     1.1.0
  * Author:      Nils Woetzel
  * Author URI:  https://github.com/nwoetzel
  * Text Domain: edd-github
@@ -21,6 +21,8 @@ if( !class_exists( 'EDD_Github' ) ) {
  * @since 1.0.0
  */
 class EDD_Github {
+
+    CONST TEXT_DOMAIN = 'edd-github';
 
     /**
      * @var EDD_Github $instance The one true EDD_Github
@@ -40,7 +42,7 @@ class EDD_Github {
             self::$instance = new EDD_Github();
             self::$instance->setup_constants();
             self::$instance->includes();
-//            self::$instance->load_textdomain();
+            self::$instance->load_textdomain();
             self::$instance->registerPostMeta();
             self::$instance->hooks();
         }
@@ -56,7 +58,7 @@ class EDD_Github {
      */
     private function setup_constants() {
         // Plugin version
-        define( 'EDD_GITHUB_VER', '1.0.1' );
+        define( 'EDD_GITHUB_VER', '1.1.0' );
         // Plugin path
         define( 'EDD_GITHUB_DIR', plugin_dir_path( __FILE__ ) );
         // Plugin URL
@@ -72,16 +74,16 @@ class EDD_Github {
      */
     private function includes() {
         // Include scripts
-//        require_once EDD_PLUGIN_NAME_DIR . 'includes/scripts.php';
-//        require_once EDD_PLUGIN_NAME_DIR . 'includes/functions.php';
+//        require_once EDD_GITHUB_DIR . 'includes/scripts.php';
+//        require_once EDD_GITHUB_DIR . 'includes/functions.php';
         /**
          * @todo        The following files are not included in the boilerplate, but
          *              the referenced locations are listed for the purpose of ensuring
          *              path standardization in EDD extensions. Uncomment any that are
          *              relevant to your extension, and remove the rest.
          */
-//        require_once EDD_PLUGIN_NAME_DIR . 'includes/shortcodes.php';
-//        require_once EDD_PLUGIN_NAME_DIR . 'includes/widgets.php';
+//        require_once EDD_GITHUB_DIR . 'includes/shortcodes.php';
+//        require_once EDD_GITHUB_DIR . 'includes/widgets.php';
 
         require_once EDD_GITHUB_DIR . 'includes/class.github-releases.php';
     }
@@ -112,8 +114,37 @@ class EDD_Github {
 
         // Handle licensing
 //        if( class_exists( 'EDD_License' ) ) {
-//            $license = new EDD_License( __FILE__, 'VC Integration', EDD_VC_INTEGRATION_VER, 'Nils Woetzel' );
+//            $license = new EDD_License( __FILE__, 'VC Integration', EDD_GITHUB_VER, 'Nils Woetzel' );
 //        }
+    }
+
+    /**
+     * Internationalization
+     *
+     * @access      public
+     * @since       1.1.0
+     * @return      void
+     */
+    public function load_textdomain() {
+        // Set filter for language directory
+        $lang_dir = EDD_GITHUB_DIR . '/languages/';
+        $lang_dir = apply_filters( 'edd_github_languages_directory', $lang_dir );
+        // Traditional WordPress plugin locale filter
+        $locale = apply_filters( 'plugin_locale', get_locale(), self::TEXT_DOMAIN );
+        $mofile = sprintf( '%1$s-%2$s.mo', self::TEXT_DOMAIN, $locale );
+        // Setup paths to current locale file
+        $mofile_local   = $lang_dir . $mofile;
+        $mofile_global  = WP_LANG_DIR . '/' . self::TEXT_DOMAIN . '/' . $mofile;
+        if( file_exists( $mofile_global ) ) {
+            // Look in global /wp-content/languages/edd-github/ folder
+            load_textdomain( self::TEXT_DOMAIN, $mofile_global );
+        } elseif( file_exists( $mofile_local ) ) {
+            // Look in local /wp-content/plugins/edd-github/languages/ folder
+            load_textdomain( self::TEXT_DOMAIN, $mofile_local );
+        } else {
+            // Load the default language files
+            load_plugin_textdomain( self::TEXT_DOMAIN, false, 'edd-github/languages' );
+        }
     }
 
     /**
