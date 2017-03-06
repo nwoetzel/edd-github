@@ -21,6 +21,20 @@ if( !defined( 'ABSPATH' ) ) exit;
 class EDD_Github_Releases {
 
     /**
+     * string denoting the latest release
+     * @since 1.0.1
+     * @var string
+     */
+    CONST LATEST = 'latest';
+
+    /**
+     * Lifetime of the release cache - 12hours
+     * @since 1.0.1
+     * @var string
+     */
+    CONST CACHE_EXPIRATION_HOURS = 12;
+
+    /**
      * Github user name.
      *
      * @access private
@@ -63,17 +77,43 @@ class EDD_Github_Releases {
     }
     
     /**
-     * Releases api to report the content of a release with all assets
+     * Releases api to report the content of a release with all assets and information
      * https://developer.github.com/v3/repos/releases/
+     * Internally caching through wordpress transients is used
      *
      * @access public
      * @since  1.0.0
-     * @param  string $tag the release tag of interest (latest release by default)
+     * @param  string $tag the release tag of interest (latest release by default if $tag is empty)
      * @return \stdClass|null release object from json response, null if there is no release
      */
     public function releases($tag = null) {
+        if (empty($tag)) {
+            $tag = self::LATEST;
+        }
+
+        $body = $this->getCachedRelease($tag);
+        // no cache hit
+        if ( $body === false ) {
+            // get a fresh reponse
+            $body = $this->githubReleases($tag);
+            $this->cacheRelease($tag,$body);
+        }
+
+        return $body;
+    }
+
+    /**
+     * Releases api to report the content of a release with all assets and information
+     * https://developer.github.com/v3/repos/releases/
+     *
+     * @access public
+     * @since  1.0.1
+     * @param  string $tag the release tag of interest
+     * @return \stdClass|null release object from json response, null if there is no release
+     */
+    private function githubReleases($tag) {
         $url = "https://api.github.com/repos/{$this->username}/{$this->repository}/releases";
-        if ( empty($tag) || $tag == 'latest' ) {
+        if ( $tag == self::LATEST ) {
             // https://developer.github.com/v3/repos/releases/#get-the-latest-release
             $url .= '/latest';
         } else {
@@ -109,6 +149,49 @@ class EDD_Github_Releases {
         }
 
         return add_query_arg( array( "access_token" => $this->access_token ), $url );
+    }
+
+    /**
+     * cache the given body with that tag in a transient
+     * @see githubReleases
+     * @see getCachedRelease
+     *
+     * @access private
+     * @since  1.0.1
+     * @param  string $tag tag of the release
+     * @param  \stdClass $body the json_decoded github api repsonse
+     * @return void
+     */
+    private function cacheRelease($tag,$body) {
+        set_transient( $this->transientName($tag),$body, self::CACHE_EXPIRATION_HOURS * HOUR_IN_SECONDS);
+    }
+
+    /**
+     * get the cached release for the given tag
+     * @see https://codex.wordpress.org/Function_Reference/get_transient
+     * @see githubReleases
+     * @see getCachedRelease
+     *
+     * @access private
+     * @since  1.0.1
+     * @param  string $tag tag of the release
+     * @return \stdClass|bool the json_decoded github api repsonse or false, if the cache does not exist
+     */
+    private function getCachedRelease($tag) {
+        return get_transient( $this->transientName($tag));
+    }
+
+    /**
+     * helper function to assemble the transient name
+     * assembled from the github user, repository and $tag
+     *
+     * @access private
+     * @since  1.0.1
+     * @param  string $tag tag of the release
+     * @return string the transient name
+     */
+    private function transientName($tag) {
+        return "edd_github_{$this->username}_{$this->repository}_{$tag}";
     }
 
 }

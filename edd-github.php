@@ -4,7 +4,7 @@
  * Plugin Name: Easy Digital Downloads Github
  * Plugin URI:  https://github.com/nwoetzel/edd-github
  * Description: This plugin extends easy-digital-downloads adding downloads from github repositories.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Nils Woetzel
  * Author URI:  https://github.com/nwoetzel
  * Text Domain: edd-github
@@ -56,7 +56,7 @@ class EDD_Github {
      */
     private function setup_constants() {
         // Plugin version
-        define( 'EDD_GITHUB_VER', '1.0.0' );
+        define( 'EDD_GITHUB_VER', '1.0.1' );
         // Plugin path
         define( 'EDD_GITHUB_DIR', plugin_dir_path( __FILE__ ) );
         // Plugin URL
@@ -157,6 +157,16 @@ class EDD_Github {
         $github_token = $github_info['token'];
         $github_tag = $github_info['tag'];
 
+        $release = null;
+        $version = null;
+        if( $github_user && $github_repo ) {
+            $github_releases = new EDD_Github_Releases($github_user, $github_repo, $github_token);
+            $release = $github_releases->releases($github_tag);
+            if (!empty($release)) {
+                $version = $release->tag_name;
+            }
+        }
+
         // heading
         $metabox  = '<strong>Github repo</strong>';
 
@@ -186,6 +196,7 @@ class EDD_Github {
         $metabox .= EDD()->html->text( array(
             'name' => self::GITHUB_META_KEY.'[tag]',
             'value' => $github_tag,
+            'placeholder' => $version,
             'class' => 'large-text',
         ) );
         $metabox .= '</p>';
@@ -200,14 +211,13 @@ class EDD_Github {
         ) );
         $metabox .= '</p>';
 
-        if( $github_user && $github_repo ) {
-            $github_releases = new EDD_Github_Releases($github_user, $github_repo, $github_token);
-            $release = $github_releases->releases($github_tag);
-            if (!empty($release)) {
-                $metabox .= '<p>Number assets found: '.count($release->assets).'</p>';
-            } else {
-                $metabox .= '<p>No release found</p>';
-            }
+        if( !empty($release) ) {
+            $version = empty($github_tag) ? ($release->tag_name.' (latest)') : $github_tag;
+            $metabox .= '<p>Version: '.$version.'</p>';
+            $metabox .= '<p>Published at: '.$release->published_at.'</p>';
+            $metabox .= '<p>Number assets found: '.count($release->assets).'</p>';
+        } else {
+            $metabox .= '<p>No release found!</p>';
         }
 
         echo $metabox;
