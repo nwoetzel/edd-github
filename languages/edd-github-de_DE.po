@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EDD Github 1.0.2\n"
 "Report-Msgid-Bugs-To: Nils Woetzel <nils.woetzel@h-its.org>\n"
-"POT-Creation-Date: 2017-03-06 16:11+0000\n"
+"POT-Creation-Date: 2017-03-07 10:46+0000\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -17,45 +17,45 @@ msgstr ""
 "X-Generator: Poedit 1.8.7.1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;esc_html_e;esc_html_x:1,2c;esc_html__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_attr__;_ex:1,2c;_nx:4c,1,2;"
-"_nx_noop:4c,1,2;_x:1,2c;_n:1,2;_n_noop:1,2;__ngettext:1,2;"
-"__ngettext_noop:1,2;_c,_nc:4c,1,2\n"
+"esc_attr_e;esc_attr_x:1,2c;esc_attr__;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;"
+"_x:1,2c;_n:1,2;_n_noop:1,2;__ngettext:1,2;__ngettext_noop:1,2;_c,"
+"_nc:4c,1,2\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: edd-github.php:206
+#: edd-github.php:213
 msgid "Username"
 msgstr "Benutzername"
 
-#: edd-github.php:216
+#: edd-github.php:223
 msgid "Repository"
 msgstr "Repository"
 
-#: edd-github.php:226
+#: edd-github.php:233
 msgid "Tag (default latest release)"
 msgstr "Tag (standard letztes Release)"
 
-#: edd-github.php:237
+#: edd-github.php:244
 msgid "Access token"
 msgstr "Zugriffs Token"
 
-#: edd-github.php:246
+#: edd-github.php:253
 msgid " (latest)"
 msgstr " (letztes)"
 
-#: edd-github.php:247
+#: edd-github.php:254
 msgid "Version"
 msgstr "Version"
 
-#: edd-github.php:248
+#: edd-github.php:255
 msgid "Published at"
 msgstr "Veröffentlicht am"
 
-#: edd-github.php:249
+#: edd-github.php:256
 msgid "Number assets found"
 msgstr "Anzahl Anlagen gefunden"
 
-#: edd-github.php:251
+#: edd-github.php:258
 msgid "No release found!"
 msgstr "Kein Release gefunden!"
 
@@ -75,3 +75,32 @@ msgstr "installiere es"
 #, php-format
 msgid " requires Easy Digital Downloads! Please %s to continue!"
 msgstr " benötigt Easy Digital Downloads! Bitte %s um fortzufahren!"
+
+#: includes/shortcodes.php:55
+msgid "Specific Download"
+msgstr "Spezifisches Download"
+
+#: includes/shortcodes.php:56
+msgid "This post is used, if you do not select a download."
+msgstr "Dieser Post wird genutzt, wenn kein Download ausgewählt ist."
+
+#: includes/shortcodes.php:59
+msgid "Current Post"
+msgstr "Diesen Post"
+
+#: includes/shortcodes.php:78
+msgid ""
+"A single json attribute from the https://developer.github.com/v3/repos/"
+"releases/#get-a-single-release response"
+msgstr ""
+"Ein json Attribute von der https://developer.github.com/v3/repos/releases/"
+"#get-a-single-release Antwort"
+
+#: includes/shortcodes.php:97
+msgid "Github Releases"
+msgstr "Github Releases"
+
+#: includes/shortcodes.php:99
+msgid "Get any non-complex json value from the single release github api call"
+msgstr ""
+"Erhalten ein nicht-komplexen json Wert vom single release github api Aufruf"
