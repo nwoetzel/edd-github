@@ -3,7 +3,7 @@ Contributors: nwoetzel
 Tags: edd, easy digital downloads, github
 Requires at least: 4.6
 Tested up to: 4.7.2
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ From the latest release, all asset files are retrieved and provided as downloads
 Download the latest release from github as zip and install it through wordpress.
 Or use [wp-cli](http://wp-cli.org/) with the latest release:
 <pre>
-wp-cli.phar plugin install https://github.com/nwoetzel/edd-github/archive/1.0.1.zip --activate
+wp-cli.phar plugin install https://github.com/nwoetzel/edd-github/archive/1.2.0.zip --activate
 </pre>
 
 == Frequently Asked Questions ==
@@ -30,6 +30,9 @@ wp-cli.phar plugin install https://github.com/nwoetzel/edd-github/archive/1.0.1.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.2.0 =
+* added 'edd_github_releases' shortcode to display release information from github
 
 = 1.1.0 =
 * added load_textdomain
