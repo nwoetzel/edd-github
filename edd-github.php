@@ -4,7 +4,7 @@
  * Plugin Name: Easy Digital Downloads Github
  * Plugin URI:  https://github.com/nwoetzel/edd-github
  * Description: This plugin extends easy-digital-downloads adding downloads from github repositories.
- * Version:     1.1.0
+ * Version:     1.3.0
  * Author:      Nils Woetzel
  * Author URI:  https://github.com/nwoetzel
  * Text Domain: edd-github
@@ -12,6 +12,10 @@
 
 // Exit if accessed directly
 if( !defined( 'ABSPATH' ) ) exit;
+
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+        require __DIR__ . '/vendor/autoload.php';
+}
 
 if( !class_exists( 'EDD_Github' ) ) {
 
@@ -65,7 +69,7 @@ class EDD_Github {
      */
     private function setup_constants() {
         // Plugin version
-        define( 'EDD_GITHUB_VER', '1.1.0' );
+        define( 'EDD_GITHUB_VER', '1.3.0' );
         // Plugin path
         define( 'EDD_GITHUB_DIR', plugin_dir_path( __FILE__ ) );
         // Plugin URL

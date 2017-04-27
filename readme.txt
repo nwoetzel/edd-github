@@ -3,7 +3,7 @@ Contributors: nwoetzel
 Tags: edd, easy digital downloads, github
 Requires at least: 4.6
 Tested up to: 4.7.2
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,14 +22,34 @@ From the latest release, all asset files are retrieved and provided as downloads
 Download the latest release from github as zip and install it through wordpress.
 Or use [wp-cli](http://wp-cli.org/) with the latest release:
 <pre>
-wp-cli.phar plugin install https://github.com/nwoetzel/edd-github/archive/1.2.0.zip --activate
+wp-cli.phar plugin install https://github.com/nwoetzel/edd-github/archive/1.3.0.zip --activate
 </pre>
+
+Or add them as a composer package in your wordpress' composer.json file:
+<pre>
+{
+        "repositories": [
+                {
+                        "type":  "vcs",
+                        "url":   "https://github.com/nwoetzel/edd-github.git"
+                }
+
+        ],
+        "require"     : {
+                "nwoetzel/edd-github":"~1.3"
+        }
+}
+</pre>
+Read more about that at http://composer.rarst.net/
 
 == Frequently Asked Questions ==
 
 == Screenshots ==
 
 == Changelog ==
+
+= 1.3.0 =
+* added support for composer http://composer.rarst.net/
 
 = 1.2.0 =
 * added 'edd_github_releases' shortcode to display release information from github
